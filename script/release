@@ -55,8 +55,9 @@ fi
 echo -e "The latest release tag is: ${BOLD_BLUE}${latest_tag}${OFF}"
 
 # 2.5 Check if dist contest is up to date
-npm run package
-if ! git diff --quiet; then
+echo -e "Checking dist content..."
+npm run package > /dev/null 2>&1
+if ! git diff --quiet -- dist/*; then
 	echo -e "${BOLD_RED}dist content not up to date, commit it and then restart release proces${OFF}"
 	exit 1
 fi
