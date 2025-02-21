@@ -54,6 +54,12 @@ fi
 # 2. Display the latest release tag
 echo -e "The latest release tag is: ${BOLD_BLUE}${latest_tag}${OFF}"
 
+# 2.5 Check if dist contest is up to date
+npm run package
+if ! git diff --quiet; then
+	echo -e "${BOLD_RED}dist content not up to date, commit it and then restart release proces${OFF}"
+	exit 1
+fi
 # 3. Prompt the user for a new release tag
 read -r -p 'Enter a new release tag (vX.X.X format): ' new_tag
 
