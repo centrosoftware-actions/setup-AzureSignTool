@@ -1,0 +1,39 @@
+name: setup-AzureSignTool
+description: Sign files using AzureSignTool
+author: FLuzzi-csw
+
+# Define your inputs here.
+inputs:
+  version:
+    description: AzureSignTool version to install (>=6.0.0)
+    required: true
+    deafault: 'latest'
+  kvu:
+    description: Azure Key Vault url
+    required: false
+  kvi:
+    description: Azure Key Vault Client ID
+    required: false
+  kvs:
+    description: Azure Key Vault Client Secret
+    required: false
+  kvt:
+    description: Azure Key Vault Tenant
+    required: false
+  kvc:
+    description: Azure Key Vault Certificate Name
+    required: false
+  files:
+    description: Files to be signed
+    required: false
+  file_list:
+    description:
+      Path to file containing for each line the path to a file to sign
+    required: false
+  timestamp_url:
+    description: URL to an RFC3161 compliant timestamping service
+    required: false
+
+runs:
+  using: node20
+  main: dist/index.js
