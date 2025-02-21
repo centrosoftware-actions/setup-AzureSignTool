@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import * as context from '../src/context'
 import * as core from '@actions/core'
+import { setInput } from './utils'
 
 describe('getInputList', () => {
   it('handles single line correctly', async () => {
-    await setInput('foo', 'bar')
+    setInput('foo', 'bar')
     const res = await context.getInputList(core.getInput('foo'))
     expect(res).toEqual(['bar'])
   })
@@ -45,12 +46,3 @@ describe('getInputList', () => {
     expect(res).toEqual(['bar', 'baz', 'bat'])
   })
 })
-
-// See: https://github.com/actions/toolkit/blob/master/packages/core/src/core.ts#L67
-function getInputName(name: string): string {
-  return `INPUT_${name.replace(/_/g, '-').replace(/ /g, '_').toUpperCase()}`
-}
-
-function setInput(name: string, value: string): void {
-  process.env[getInputName(name)] = value
-}

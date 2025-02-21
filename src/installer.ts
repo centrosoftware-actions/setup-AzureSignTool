@@ -8,34 +8,46 @@ import { Octokit } from '@octokit/rest'
 const osArch: string = os.arch()
 const owner = 'vcsjones'
 const repo = 'AzureSignTool'
+const toolName = 'AzureSignTool'
 const exeName = 'azuresigntool.exe'
 
 export async function getAzureSignTool(
   client: Octokit,
   tag: string
 ): Promise<string> {
+  core.startGroup(`Configuring ${toolName}...`)
+  // try to find the requested version in the tool-cach
+  const requestedSemver = tag.replace(/^v/, '')
+  const cachedToolPath = tc.find(repo, requestedSemver, osArch)
+  if (cachedToolPath) {
+    core.info(`Found ${requestedSemver} in the tool cache`)
+    core.endGroup()
+    return cachedToolPath
+  }
+  core.warning(`Can't find ${requestedSemver} in the tool cache`)
+
+  // find the required version of the tool
   const { data } = await getRelease(client, {
     repo,
     owner,
     tag
   })
   const semver: string = data.tag_name.replace(/^v/, '')
-  core.info(`AzureSignTool ${semver} found`)
+  core.info(`${semver} found`)
 
   const asset = data.assets.find((asset) => asset.name.includes(osArch))
   if (!asset) {
     throw new Error(`asset not found for arch: ${osArch}`)
   }
-  const downloadUrl = asset.browser_download_url
-  core.startGroup(`Downloading ${downloadUrl}...`)
 
+  const downloadUrl = asset.browser_download_url
   const downloadPath: string = await tc.downloadTool(downloadUrl)
   core.info(`Downloaded to ${downloadPath}`)
 
   const cachePath: string = await tc.cacheFile(
     downloadPath,
     exeName,
-    repo,
+    toolName,
     semver,
     osArch
   )
