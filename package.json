@@ -1,17 +1,17 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
-  "version": "0.0.1",
-  "author": "",
+  "name": "setup-AzureSignTool",
+  "description": "Download AzureSignTool and cache it for future use",
+  "version": "0.0.2",
+  "author": "Francesco Luzzi",
   "type": "module",
   "private": true,
-  "homepage": "https://github.com/actions/typescript-action",
+  "homepage": "https://github.com/centrosoftware-actions/setup-AzureSignTool",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/centrosoftware-actions/setup-AzureSignTool.git"
   },
   "bugs": {
-    "url": "https://github.com/actions/typescript-action/issues"
+    "url": "https://github.com/centrosoftware-actions/setup-AzureSignTool/issues"
   },
   "keywords": [
     "actions"
