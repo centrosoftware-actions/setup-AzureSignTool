@@ -22,7 +22,7 @@ export async function getAzureSignTool(
   if (cachedToolPath) {
     core.info(`Found ${requestedSemver} in the tool cache`)
     core.endGroup()
-    return cachedToolPath
+    return path.join(cachedToolPath, exeName)
   }
   core.warning(`Can't find ${requestedSemver} in the tool cache`)
 
