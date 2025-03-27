@@ -23,9 +23,10 @@ uses: centrosoftware-actions/setup-AzureSignTool@v0
     kvs: ${{ secrets.kvs }}
     kvt: ${{ secrets.kvt }}
     kvc: ${{ secrets.kvc }}
-    # list of files to sign
+    # list of files and globs to sign
     files: |
       file1
+      dir/**/*.dll
       ...
     # file containing one file path per row
     file_list: files_to_sign.txt
