@@ -1,6 +1,8 @@
 ﻿# setup-AzureSignTool
 
-This action will install and configure [AzureSignTool](https://github.com/vcsjones/AzureSignTool) of version `v6.0.0` onwards (only `AOT` executables)
+This action will install and configure
+[AzureSignTool](https://github.com/vcsjones/AzureSignTool) of version `v6.0.0`
+onwards (only `AOT` executables)
 
 ## Install only
 
