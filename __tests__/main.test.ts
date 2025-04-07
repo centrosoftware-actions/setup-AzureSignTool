@@ -8,7 +8,6 @@
 import { vi, describe, expect, afterEach, it } from 'vitest'
 import { setInput } from './utils.js'
 import * as tc from '@actions/tool-cache'
-import { run } from '../src/main.js'
 import * as exec from '@actions/exec'
 
 vi.mock('@actions/exec', () => {
@@ -25,6 +24,18 @@ vi.mock('@actions/tool-cache', () => {
   }
 })
 
+vi.mock(import('@actions/core'), async (importOriginal) => {
+  const originalCore = await importOriginal()
+  return {
+    ...originalCore,
+    setFailed: vi.fn()
+  }
+})
+
+import { run } from '../src/main.js'
+
+import * as core from '@actions/core'
+
 describe('setup-AzureSignTool', () => {
   afterEach(() => {
     vi.resetAllMocks()
@@ -39,17 +50,7 @@ describe('setup-AzureSignTool', () => {
   })
   it('Sets the time output', async () => {
     setInput('kvu', 'test_user')
-    try {
-      await run()
-      expect.unreachable(
-        'with missmatch values the run should execute correctly'
-      )
-    } catch (err) {
-      expect(err).toBeInstanceOf(Error)
-      expect(tc.find).not.toBeCalled()
-      expect(tc.downloadTool).not.toBeCalled()
-      expect(tc.cacheFile).not.toBeCalled()
-      expect(exec.exec).not.toBeCalled()
-    }
+    await run()
+    expect(core.setFailed).toBeCalled()
   })
 })
