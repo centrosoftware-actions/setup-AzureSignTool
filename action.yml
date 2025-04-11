@@ -30,6 +30,10 @@ inputs:
     description:
       Path to file containing for each line the path to a file to sign
     required: false
+  skip_signed:
+    description: skip signing already signed files
+    required: true
+    default: false
   timestamp_url:
     description: URL to an RFC3161 compliant timestamping service
     required: false

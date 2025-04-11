@@ -11,6 +11,23 @@ const repo = 'AzureSignTool'
 const toolName = 'AzureSignTool'
 const exeName = 'azuresigntool.exe'
 
+const addToPath = (exePath: string) => {
+  const dir = path.dirname(exePath)
+  core.addPath(dir)
+  core.debug(`Added ${dir} to PATH`)
+}
+
+export async function installAzureSignTool(
+  client: Octokit,
+  tag: string
+): Promise<string> {
+  core.startGroup('installAzureSignTool')
+  const exePath = await getAzureSignTool(client, tag)
+  addToPath(exePath)
+  core.endGroup()
+  return exeName
+}
+
 export async function getAzureSignTool(
   client: Octokit,
   tag: string
@@ -20,11 +37,10 @@ export async function getAzureSignTool(
   const requestedSemver = tag.replace(/^v/, '')
   const cachedToolPath = tc.find(repo, requestedSemver, osArch)
   if (cachedToolPath) {
-    core.info(`Found ${requestedSemver} in the tool cache`)
-    core.endGroup()
+    core.debug(`Found ${requestedSemver} in the tool cache`)
     return path.join(cachedToolPath, exeName)
   }
-  core.warning(`Can't find ${requestedSemver} in the tool cache`)
+  core.debug(`Can't find ${requestedSemver} in the tool cache`)
 
   // find the required version of the tool
   const { data } = await getRelease(client, {
@@ -42,7 +58,7 @@ export async function getAzureSignTool(
 
   const downloadUrl = asset.browser_download_url
   const downloadPath: string = await tc.downloadTool(downloadUrl)
-  core.info(`Downloaded to ${downloadPath}`)
+  core.debug(`Downloaded to ${downloadPath}`)
 
   const cachePath: string = await tc.cacheFile(
     downloadPath,
@@ -55,7 +71,5 @@ export async function getAzureSignTool(
 
   const exePath: string = path.join(cachePath, exeName)
   core.debug(`Exe path is ${exePath}`)
-  core.endGroup()
-
   return exePath
 }

@@ -3,7 +3,6 @@ import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as installer from './installer.js'
 import * as os from 'os'
-import * as path from 'path'
 import { Octokit } from '@octokit/rest'
 
 export async function run(): Promise<void> {
@@ -15,14 +14,10 @@ export async function run(): Promise<void> {
 
     const inputs: context.Inputs = await context.getInputs()
     const octokit = new Octokit()
-    const azureSignTool = await installer.getAzureSignTool(
+    const azureSignTool = await installer.installAzureSignTool(
       octokit,
       inputs.version
     )
-
-    const dir = path.dirname(azureSignTool)
-    core.addPath(dir)
-    core.debug(`Added ${dir} to PATH`)
     if (!inputs.params) {
       return
     }
@@ -34,6 +29,9 @@ export async function run(): Promise<void> {
     }
     if (core.isDebug()) {
       command = command.concat(' -v')
+    }
+    if (params.skip_signed) {
+      command = command.concat(` --skip-signed`)
     }
     if (params.file_list) {
       command = command.concat(` -ifl ${params.file_list}`)

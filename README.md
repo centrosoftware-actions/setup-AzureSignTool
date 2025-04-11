@@ -32,4 +32,6 @@ uses: centrosoftware-actions/setup-AzureSignTool@v0
     file_list: files_to_sign.txt
     # url to timestamp service, if not set, timestamp will not be set
     timestamp_url: http://timestamp.digicert.com
+    # skip signing already signed files (default: false)
+    skip_signed: true
 ```

@@ -6,6 +6,7 @@ export interface Params {
   kvs: string
   kvt: string
   kvc: string
+  skip_signed: boolean
   files?: string[]
   file_list?: string
   timestamp_url?: string
@@ -50,19 +51,27 @@ function getParams(): Params | undefined {
       `setup-AzureSignTool: required parameters for signing are missing:\n${missingParams}`
     )
   }
+  const timestamp_url = core.getInput('timestamp_url') || undefined
   const files = getInputList(core.getInput('files'))
-  const timestamp_url = core.getInput('timestamp-url') || undefined
-  const file_list = core.getInput('file-list') || undefined
-  return {
+  const file_list = core.getInput('file_list') || undefined
+  if (files === undefined && file_list === undefined) {
+    throw new Error(
+      'setup-AzureSignTool: both "file_list" and "files" are not populated!'
+    )
+  }
+  const skip_signed = core.getBooleanInput('skip_signed', { required: true })
+  const result: Params = {
     kvu,
     kvi,
     kvs,
     kvt,
     kvc,
+    skip_signed,
     files,
     timestamp_url,
     file_list
-  } as Params
+  }
+  return result
 }
 
 export async function getInputs(): Promise<Inputs> {

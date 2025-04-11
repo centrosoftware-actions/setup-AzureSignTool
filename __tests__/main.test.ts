@@ -5,7 +5,7 @@
  * functions and objects. For example, the core module is mocked in this test,
  * so that the actual '@actions/core' module is not imported.
  */
-import { vi, describe, expect, afterEach, it } from 'vitest'
+import { vi, describe, expect, it, beforeEach } from 'vitest'
 import { setInput } from './utils.js'
 import * as tc from '@actions/tool-cache'
 import * as exec from '@actions/exec'
@@ -37,8 +37,9 @@ import { run } from '../src/main.js'
 import * as core from '@actions/core'
 
 describe('setup-AzureSignTool', () => {
-  afterEach(() => {
+  beforeEach(() => {
     vi.resetAllMocks()
+    vi.unstubAllEnvs()
   })
 
   it('Sets the time output', async () => {
