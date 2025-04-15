@@ -23,7 +23,7 @@ export async function run(): Promise<void> {
     }
     const params = inputs.params
 
-    let command = `${azureSignTool} -kvu ${params.kvu} -kvi ${params.kvi} -kvt ${params.kvt} -kvs ${params.kvs} -kvc ${params.kvc}`
+    let command = `${azureSignTool} sign -kvu ${params.kvu} -kvi ${params.kvi} -kvt ${params.kvt} -kvs ${params.kvs} -kvc ${params.kvc}`
     if (params.timestamp_url) {
       command = command.concat(` -tr ${params.timestamp_url}`)
     }
