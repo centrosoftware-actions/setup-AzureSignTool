@@ -21,7 +21,6 @@ export async function installAzureSignTool(
   client: Octokit,
   tag: string
 ): Promise<string> {
-  core.startGroup('installAzureSignTool')
   const exePath = await getAzureSignTool(client, tag)
   addToPath(exePath)
   core.endGroup()
@@ -33,25 +32,24 @@ export async function getAzureSignTool(
   tag: string
 ): Promise<string> {
   core.startGroup(`Configuring ${toolName}...`)
-  // try to find the requested version in the tool-cach
-  const requestedSemver = tag.replace(/^v/, '')
-  const cachedToolPath = tc.find(repo, requestedSemver, osArch)
-  if (cachedToolPath) {
-    core.debug(`Found ${requestedSemver} in the tool cache`)
-    return path.join(cachedToolPath, exeName)
-  }
-  core.debug(`Can't find ${requestedSemver} in the tool cache`)
-
+  // try to find the requested version in the tool-cache
   // find the required version of the tool
-  const { data } = await getRelease(client, {
+  const { data: releaseData } = await getRelease(client, {
     repo,
     owner,
     tag
   })
-  const semver: string = data.tag_name.replace(/^v/, '')
+  const semver = releaseData.tag_name.replace(/^v/, '')
   core.info(`${semver} found`)
+  const cachedToolPath = tc.find(repo, semver, osArch)
+  if (cachedToolPath) {
+    core.info(`Found ${semver} in the tool cache`)
+    core.debug(`Exe path is ${cachedToolPath}`)
+    return path.join(cachedToolPath, exeName)
+  }
+  core.debug(`Can't find ${semver} in the tool cache`)
 
-  const asset = data.assets.find((asset) => asset.name.includes(osArch))
+  const asset = releaseData.assets.find((asset) => asset.name.includes(osArch))
   if (!asset) {
     throw new Error(`asset not found for arch: ${osArch}`)
   }
@@ -70,6 +68,7 @@ export async function getAzureSignTool(
   core.debug(`Cached to ${cachePath}`)
 
   const exePath: string = path.join(cachePath, exeName)
+  core.info(`Installed ${semver}`)
   core.debug(`Exe path is ${exePath}`)
   return exePath
 }
