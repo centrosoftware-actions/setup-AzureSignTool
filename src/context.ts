@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import * as path from 'node:path'
 
 export interface Params {
   kvu: string
@@ -52,7 +53,8 @@ function getParams(): Params | undefined {
     )
   }
   const timestamp_url = core.getInput('timestamp_url') || undefined
-  const files = getInputList(core.getInput('files'))
+  const cwd = process.cwd()
+  const files = getInputList(cwd, core.getInput('files'))
   const file_list = core.getInput('file_list') || undefined
   if (files === undefined && file_list === undefined) {
     throw new Error(
@@ -81,15 +83,17 @@ export async function getInputs(): Promise<Inputs> {
   }
 }
 
-export function getInputList(items: string): string[] | undefined {
+export function getInputList(cwd: string, items: string): string[] | undefined {
   if (items == '') {
     return undefined
   }
   return items
     .split(/\r?\n|,|;/)
     .filter((x) => x)
-    .reduce<string[]>(
-      (acc, line) => acc.concat(line.replace('\\', '/').trim()),
-      []
-    )
+    .reduce<string[]>((acc, line) => {
+      if (path.isAbsolute(line)) {
+        line = path.relative(cwd, line)
+      }
+      return acc.concat(line.replaceAll('\\', '/').trim())
+    }, [])
 }

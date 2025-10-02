@@ -14,46 +14,76 @@ describe('getInputList', () => {
     vi.unstubAllEnvs()
   })
 
-  it('handles single line correctly', async () => {
+  it('handles single line correctly', () => {
     setInput('foo', 'bar')
-    const res = await context.getInputList(core.getInput('foo'))
+    const res = context.getInputList('.', core.getInput('foo'))
     expect(res).toEqual(['bar'])
   })
 
-  it('handles multiple lines correctly', async () => {
+  it('handles multiple lines correctly', () => {
     setInput('foo', 'bar\nbaz')
-    const res = await context.getInputList(core.getInput('foo'))
+    const res = context.getInputList('.', core.getInput('foo'))
     expect(res).toEqual(['bar', 'baz'])
   })
 
-  it('remove empty lines correctly', async () => {
+  it('remove empty lines correctly', () => {
     setInput('foo', 'bar\n\nbaz')
-    const res = await context.getInputList(core.getInput('foo'))
+    const res = context.getInputList('.', core.getInput('foo'))
     expect(res).toEqual(['bar', 'baz'])
   })
 
-  it('handles comma correctly', async () => {
+  it('handles comma correctly', () => {
     setInput('foo', 'bar,baz')
-    const res = await context.getInputList(core.getInput('foo'))
+    const res = context.getInputList('.', core.getInput('foo'))
     expect(res).toEqual(['bar', 'baz'])
   })
 
-  it('remove empty result correctly', async () => {
+  it('remove empty result correctly', () => {
     setInput('foo', 'bar,baz,')
-    const res = await context.getInputList(core.getInput('foo'))
+    const res = context.getInputList('.', core.getInput('foo'))
     expect(res).toEqual(['bar', 'baz'])
   })
 
-  it('handles different new lines correctly', async () => {
+  it('handles different new lines correctly', () => {
     setInput('foo', 'bar\r\nbaz')
-    const res = await context.getInputList(core.getInput('foo'))
+    const res = context.getInputList('.', core.getInput('foo'))
     expect(res).toEqual(['bar', 'baz'])
   })
 
-  it('handles different new lines and comma correctly', async () => {
+  it('handles different new lines and comma correctly', () => {
     setInput('foo', 'bar\r\nbaz,bat')
-    const res = await context.getInputList(core.getInput('foo'))
+    const res = context.getInputList('.', core.getInput('foo'))
     expect(res).toEqual(['bar', 'baz', 'bat'])
+  })
+
+  it('handles malformed slashes correctly', () => {
+    setInput(
+      'foo',
+      'file1,path/file2;my\\path/file3\npath with space/file4\r\npath\\with space/file5'
+    )
+    const res = context.getInputList('.', core.getInput('foo'))
+    expect(res).toEqual([
+      'file1',
+      'path/file2',
+      'my/path/file3',
+      'path with space/file4',
+      'path/with space/file5'
+    ])
+  })
+
+  it('handles absolute paths', () => {
+    setInput(
+      'foo',
+      'file1,C:/path/file2;C:\\my\\path/file3\nC:/path with space/file4\r\nC:\\path\\with space/file5'
+    )
+    const res = context.getInputList('C:\\', core.getInput('foo'))
+    expect(res).toEqual([
+      'file1',
+      'path/file2',
+      'my/path/file3',
+      'path with space/file4',
+      'path/with space/file5'
+    ])
   })
 
   it('handles correctly not params', async () => {
@@ -85,37 +115,6 @@ describe('getInputList', () => {
       kvc: kvc,
       skip_signed: false,
       files: ['file1', 'file2', 'file3', 'file4', 'file5']
-    }
-    const inputs = await context.getInputs()
-    expect(inputs.version).eq('latest')
-    expect(inputs.params).toEqual(expectedParams)
-  })
-
-  it('fix malformed paths', async () => {
-    const kvu = setKvInput('kvu')
-    const kvi = setKvInput('kvi')
-    const kvs = setKvInput('kvs')
-    const kvt = setKvInput('kvt')
-    const kvc = setKvInput('kvc')
-    setInput(
-      'files',
-      'file1,path/file2;my\\path/file3\npath with space/file4\r\npath\\with space/file5'
-    )
-    setInput('skip_signed', 'false')
-    const expectedParams: context.Params = {
-      kvu: kvu,
-      kvi: kvi,
-      kvs: kvs,
-      kvt: kvt,
-      kvc: kvc,
-      skip_signed: false,
-      files: [
-        'file1',
-        'path/file2',
-        'my/path/file3',
-        'path with space/file4',
-        'path/with space/file5'
-      ]
     }
     const inputs = await context.getInputs()
     expect(inputs.version).eq('latest')
