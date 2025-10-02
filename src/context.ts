@@ -89,7 +89,7 @@ export function getInputList(items: string): string[] | undefined {
     .split(/\r?\n|,|;/)
     .filter((x) => x)
     .reduce<string[]>(
-      (acc, line) => acc.concat(line).map((pat) => pat.trim()),
+      (acc, line) => acc.concat(line.replace('\\', '/').trim()),
       []
     )
 }

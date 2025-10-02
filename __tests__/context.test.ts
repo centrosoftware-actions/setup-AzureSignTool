@@ -91,6 +91,37 @@ describe('getInputList', () => {
     expect(inputs.params).toEqual(expectedParams)
   })
 
+  it('fix malformed paths', async () => {
+    const kvu = setKvInput('kvu')
+    const kvi = setKvInput('kvi')
+    const kvs = setKvInput('kvs')
+    const kvt = setKvInput('kvt')
+    const kvc = setKvInput('kvc')
+    setInput(
+      'files',
+      'file1,path/file2;my\\path/file3\npath with space/file4\r\npath\\with space/file5'
+    )
+    setInput('skip_signed', 'false')
+    const expectedParams: context.Params = {
+      kvu: kvu,
+      kvi: kvi,
+      kvs: kvs,
+      kvt: kvt,
+      kvc: kvc,
+      skip_signed: false,
+      files: [
+        'file1',
+        'path/file2',
+        'my/path/file3',
+        'path with space/file4',
+        'path/with space/file5'
+      ]
+    }
+    const inputs = await context.getInputs()
+    expect(inputs.version).eq('latest')
+    expect(inputs.params).toEqual(expectedParams)
+  })
+
   it('errors if optional params are partially passed', async () => {
     setKvInput('kvu')
     setInput('files', 'file1,file2;file3\nfile4\r\nfile5')
