@@ -1,7 +1,7 @@
 {
   "name": "setup-AzureSignTool",
   "description": "Download AzureSignTool and cache it for future use",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": "Francesco Luzzi",
   "type": "module",
   "private": true,

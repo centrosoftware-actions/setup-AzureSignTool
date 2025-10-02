@@ -23,23 +23,36 @@ export async function run(): Promise<void> {
     }
     const params = inputs.params
 
-    let command = `${azureSignTool} sign -kvu ${params.kvu} -kvi ${params.kvi} -kvt ${params.kvt} -kvs ${params.kvs} -kvc ${params.kvc}`
+    const azureSignToolsArgs = [
+      'sign',
+      '-kvu',
+      params.kvu,
+      '-kvi',
+      params.kvi,
+      '-kvt',
+      params.kvt,
+      '-kvs',
+      params.kvs,
+      '-kvc',
+      params.kvc
+    ]
+
     if (params.timestamp_url) {
-      command = command.concat(` -tr ${params.timestamp_url}`)
+      azureSignToolsArgs.push('-tr', params.timestamp_url)
     }
     if (core.isDebug()) {
-      command = command.concat(' -v')
+      azureSignToolsArgs.push('-v')
     }
     if (params.skip_signed) {
-      command = command.concat(` --skip-signed`)
+      azureSignToolsArgs.push(`--skip-signed`)
     }
     if (params.file_list) {
-      command = command.concat(` -ifl ${params.file_list}`)
+      azureSignToolsArgs.push('-ifl', params.file_list)
     }
     if (params.files) {
-      command = command.concat(` ${params.files.join(' ')}`)
+      azureSignToolsArgs.push(...params.files)
     }
-    await exec.exec(command)
+    await exec.exec(azureSignTool, azureSignToolsArgs)
   } catch (error) {
     core.setFailed(`something bad happened: ${error}`)
   }
