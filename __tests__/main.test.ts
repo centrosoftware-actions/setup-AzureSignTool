@@ -9,6 +9,29 @@ import { vi, describe, expect, it, beforeEach } from 'vitest'
 import { setInput } from './utils.js'
 import * as tc from '@actions/tool-cache'
 import * as exec from '@actions/exec'
+import * as os from 'os'
+
+import * as release from '../src/release.js'
+
+const osArch: string = os.arch()
+
+const mockResultData = {
+  data: {
+    tag_name: 'test_tag',
+    assets: [
+      { name: `${osArch}_test`, browser_download_url: 'http://test_url' }
+    ]
+  }
+}
+
+vi.mock('../src/release.js', () => {
+  return {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getRelease: vi.fn((_client: Octokit, _args: release.GetReleaseOptions) => {
+      return mockResultData
+    })
+  }
+})
 
 vi.mock('@actions/exec', () => {
   return {
@@ -35,6 +58,7 @@ vi.mock(import('@actions/core'), async (importOriginal) => {
 import { run } from '../src/main.js'
 
 import * as core from '@actions/core'
+import { Octokit } from '@octokit/rest'
 
 describe('setup-AzureSignTool', () => {
   beforeEach(() => {
@@ -42,14 +66,26 @@ describe('setup-AzureSignTool', () => {
     vi.unstubAllEnvs()
   })
 
-  it('Sets the time output', async () => {
+  it('test run function downloading "latest" tag', async () => {
     await run()
+    expect(release.getRelease)
     expect(tc.find).toBeCalled()
     expect(tc.downloadTool).toBeCalled()
     expect(tc.cacheFile).toBeCalled()
     expect(exec.exec).not.toBeCalled()
   })
-  it('Sets the time output', async () => {
+
+  it('test run function downloading a non "latest" tag', async () => {
+    setInput('version', 'test_version')
+    await run()
+    expect(release.getRelease)
+    expect(tc.find).toBeCalled()
+    expect(tc.downloadTool).toBeCalled()
+    expect(tc.cacheFile).toBeCalled()
+    expect(exec.exec).not.toBeCalled()
+  })
+
+  it('test run function passing partial data', async () => {
     setInput('kvu', 'test_user')
     await run()
     expect(core.setFailed).toBeCalled()

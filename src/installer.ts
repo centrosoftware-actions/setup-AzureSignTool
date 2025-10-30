@@ -21,6 +21,7 @@ export async function installAzureSignTool(
   client: Octokit,
   tag: string
 ): Promise<string> {
+  core.startGroup('download and install AzureSignTool')
   const exePath = await getAzureSignTool(client, tag)
   addToPath(exePath)
   core.endGroup()
@@ -34,20 +35,43 @@ export async function getAzureSignTool(
   core.startGroup(`Configuring ${toolName}...`)
   // try to find the requested version in the tool-cache
   // find the required version of the tool
-  const { data: releaseData } = await getRelease(client, {
-    repo,
-    owner,
-    tag
-  })
-  const semver = releaseData.tag_name.replace(/^v/, '')
-  core.info(`${semver} found`)
+  let releaseData: Awaited<ReturnType<typeof getRelease>>['data'] | undefined
+  let tag_name = tag
+
+  // download the releaseData only for "latest"
+  // the tag could be a valid version and we could save a call
+  // to github, hence, less ratelimit problems
+  if (tag === 'latest') {
+    core.info(`Retrieving releaseData for latest tag`)
+    const { data: data } = await getRelease(client, {
+      repo,
+      owner,
+      tag
+    })
+    releaseData = data
+    tag_name = releaseData.tag_name
+  }
+  const semver = tag_name.replace(/^v/, '')
+  core.info(`Searching for ${semver} cached tool`)
   const cachedToolPath = tc.find(repo, semver, osArch)
   if (cachedToolPath) {
     core.info(`Found ${semver} in the tool cache`)
     core.debug(`Exe path is ${cachedToolPath}`)
     return path.join(cachedToolPath, exeName)
   }
-  core.debug(`Can't find ${semver} in the tool cache`)
+  core.info(`Cache miss, tool not installed`)
+
+  // download the releaseData
+  // we missed the cache and the original tag was not "latest"
+  if (!releaseData) {
+    core.info(`Retrieving releaseData for ${tag_name} tag`)
+    const { data: data } = await getRelease(client, {
+      repo,
+      owner,
+      tag
+    })
+    releaseData = data
+  }
 
   const asset = releaseData.assets.find((asset) => asset.name.includes(osArch))
   if (!asset) {
