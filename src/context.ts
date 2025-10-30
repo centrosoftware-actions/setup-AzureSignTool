@@ -91,6 +91,8 @@ export function getInputList(cwd: string, items: string): string[] | undefined {
     .split(/\r?\n|,|;/)
     .filter((x) => x)
     .reduce<string[]>((acc, line) => {
+      // since AzureSignTools has some problems with absolute paths using globs
+      // make all paths relative to cwd
       if (path.isAbsolute(line)) {
         line = path.relative(cwd, line)
       }
