@@ -1,48 +1,54 @@
 ﻿# setup-AzureSignTool
 
-This action will install and configure
-[AzureSignTool](https://github.com/vcsjones/AzureSignTool) of version `v6.0.0`
-onwards (only `AOT` executables)
+This action installs and configures [AzureSignTool](https://github.com/vcsjones/AzureSignTool) on the runner's path.
+
+Only versions `v6.0.0` and later are supported (AOT executables only).
 
 ## ⚠️ Known issues
 
-The dotnet package `Microsoft.Extensions.FileSystemGlobbing` used by `AzureSignTool` has a bug reguarding absolute path with globs ([issue](https://github.com/dotnet/runtime/issues/62333)).
-From the version `7.0.0` onward this logic was patched from the `AzureSignTool`'s side.
-The actions tries to alliviate this issue for versions older than `7.0.0` by translating
-absolute paths to relative paths, this only works if the `cwd` of the process
-and the glob paths are on the same `Windows` drive.
+The .NET package `Microsoft.Extensions.FileSystemGlobbing` used by `AzureSignTool`
+has a bug when matching absolute paths with globs
+([issue](https://github.com/dotnet/runtime/issues/62333)).\
+This was fixed in `AzureSignTool` starting with `v7.0.0`.
 
-To sidestep this problem altogether, make sure that the output of your
-compilation step is a folder on the current directory (eg. `./build`)
+For versions older than `v7.0.0`, this action attempts to work around the bug by
+translating absolute paths to relative paths.\
+This only works if the process
+`cwd` and the glob paths are on the same Windows drive.
 
-## Install only
+To avoid the issue entirely, ensure your build output is a folder in the
+current directory (for example, `./build`).
+
+## Usage examples
+
+### Install only
 
 ```yml
 uses: centrosoftware-actions/setup-AzureSignTool@v1
-  with:
-    version: v7.0.0
+with:
+  version: latest
 ```
 
-## Install and sign
+### Install and sign
 
 ```yml
 uses: centrosoftware-actions/setup-AzureSignTool@v1
-  with:
-    version: v7.0.0
-    kvu: ${{ secrets.kvu }}
-    kvi: ${{ secrets.kvi }}
-    kvs: ${{ secrets.kvs }}
-    kvt: ${{ secrets.kvt }}
-    kvc: ${{ secrets.kvc }}
-    # list of files and globs to sign
-    files: |
-      file1
-      dir/**/*.dll
-      ...
-    # file containing one file path per row
-    file_list: files_to_sign.txt
-    # url to timestamp service, if not set, timestamp will not be set
-    timestamp_url: http://timestamp.digicert.com
-    # skip signing already signed files (default: false)
-    skip_signed: true
+with:
+  version: v7.0.0
+  kvu: ${{ secrets.kvu }}
+  kvi: ${{ secrets.kvi }}
+  kvs: ${{ secrets.kvs }}
+  kvt: ${{ secrets.kvt }}
+  kvc: ${{ secrets.kvc }}
+  # list of files and globs to sign
+  files: |
+    file1
+    dir/**/*.dll
+    ...
+  # file containing one file path per row
+  file_list: files_to_sign.txt
+  # url to timestamp service; if not set, no timestamp is added
+  timestamp_url: http://timestamp.digicert.com
+  # skip signing already signed files (default: false)
+  skip_signed: true
 ```
