@@ -57,9 +57,7 @@ function getParams(): Params | undefined {
   const files = getInputList(cwd, core.getInput('files'))
   const file_list = core.getInput('file_list') || undefined
   if (files === undefined && file_list === undefined) {
-    throw new Error(
-      'setup-AzureSignTool: both "file_list" and "files" are not populated!'
-    )
+    throw new Error('setup-AzureSignTool: both "file_list" and "files" are not populated!')
   }
   const skip_signed = core.getBooleanInput('skip_signed', { required: true })
   const result: Params = {

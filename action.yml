@@ -27,8 +27,7 @@ inputs:
     description: Files to be signed
     required: false
   file_list:
-    description:
-      Path to file containing for each line the path to a file to sign
+    description: Path to file containing for each line the path to a file to sign
     required: false
   skip_signed:
     description: skip signing already signed files
@@ -39,5 +38,5 @@ inputs:
     required: false
 
 runs:
-  using: node20
+  using: node24
   main: dist/index.js

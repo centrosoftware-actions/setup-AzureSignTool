@@ -14,10 +14,7 @@ export async function run(): Promise<void> {
 
     const inputs: context.Inputs = await context.getInputs()
     const octokit = new Octokit()
-    const azureSignTool = await installer.installAzureSignTool(
-      octokit,
-      inputs.version
-    )
+    const azureSignTool = await installer.installAzureSignTool(octokit, inputs.version)
     if (!inputs.params) {
       return
     }

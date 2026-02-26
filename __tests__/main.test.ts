@@ -18,9 +18,7 @@ const osArch: string = os.arch()
 const mockResultData = {
   data: {
     tag_name: 'test_tag',
-    assets: [
-      { name: `${osArch}_test`, browser_download_url: 'http://test_url' }
-    ]
+    assets: [{ name: `${osArch}_test`, browser_download_url: 'http://test_url' }]
   }
 }
 

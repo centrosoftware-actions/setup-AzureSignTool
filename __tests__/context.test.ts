@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import * as context from '../src/context'
+import * as context from '../src/context.js'
 import * as core from '@actions/core'
-import { setInput } from './utils'
+import { setInput } from './utils.js'
 
 const setKvInput = (kv_field: string): string => {
   const input = `test_${kv_field}`

@@ -9,10 +9,7 @@ export interface GetReleaseOptions {
 // get github release of a repository depending on the release value:
 // - "latest" download the latest release
 // - "$tag" download the release referenced by the tag
-export async function getRelease(
-  octokit: Octokit,
-  { owner, repo, tag }: GetReleaseOptions
-) {
+export async function getRelease(octokit: Octokit, { owner, repo, tag }: GetReleaseOptions) {
   if (tag === 'latest') {
     return octokit.rest.repos.getLatestRelease({ owner, repo })
   }

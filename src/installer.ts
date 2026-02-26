@@ -17,10 +17,7 @@ const addToPath = (exePath: string) => {
   core.debug(`Added ${dir} to PATH`)
 }
 
-export async function installAzureSignTool(
-  client: Octokit,
-  tag: string
-): Promise<string> {
+export async function installAzureSignTool(client: Octokit, tag: string): Promise<string> {
   core.startGroup('download and install AzureSignTool')
   const exePath = await getAzureSignTool(client, tag)
   addToPath(exePath)
@@ -28,10 +25,7 @@ export async function installAzureSignTool(
   return exeName
 }
 
-export async function getAzureSignTool(
-  client: Octokit,
-  tag: string
-): Promise<string> {
+export async function getAzureSignTool(client: Octokit, tag: string): Promise<string> {
   core.startGroup(`Configuring ${toolName}...`)
   // try to find the requested version in the tool-cache
   // find the required version of the tool
@@ -43,7 +37,7 @@ export async function getAzureSignTool(
   // to github, hence, less ratelimit problems
   if (tag === 'latest') {
     core.info(`Retrieving releaseData for latest tag`)
-    const { data: data } = await getRelease(client, {
+    const { data } = await getRelease(client, {
       repo,
       owner,
       tag
@@ -65,7 +59,7 @@ export async function getAzureSignTool(
   // we missed the cache and the original tag was not "latest"
   if (!releaseData) {
     core.info(`Retrieving releaseData for ${tag_name} tag`)
-    const { data: data } = await getRelease(client, {
+    const { data } = await getRelease(client, {
       repo,
       owner,
       tag
@@ -82,13 +76,7 @@ export async function getAzureSignTool(
   const downloadPath: string = await tc.downloadTool(downloadUrl)
   core.debug(`Downloaded to ${downloadPath}`)
 
-  const cachePath: string = await tc.cacheFile(
-    downloadPath,
-    exeName,
-    toolName,
-    semver,
-    osArch
-  )
+  const cachePath: string = await tc.cacheFile(downloadPath, exeName, toolName, semver, osArch)
   core.debug(`Cached to ${cachePath}`)
 
   const exePath: string = path.join(cachePath, exeName)
