@@ -15,6 +15,7 @@ export interface Params {
 
 export interface Inputs {
   version: string
+  token: string
   params?: Params
 }
 
@@ -77,6 +78,7 @@ function getParams(): Params | undefined {
 export async function getInputs(): Promise<Inputs> {
   return {
     version: core.getInput('version') || 'latest',
+    token: core.getInput('token', { required: true }),
     params: getParams()
   }
 }

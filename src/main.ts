@@ -13,7 +13,7 @@ export async function run(): Promise<void> {
     }
 
     const inputs: context.Inputs = await context.getInputs()
-    const octokit = new Octokit()
+    const octokit = new Octokit({ auth: inputs.token })
     const azureSignTool = await installer.installAzureSignTool(octokit, inputs.version)
     if (!inputs.params) {
       return
