@@ -12,6 +12,7 @@ const setKvInput = (kv_field: string): string => {
 describe('getInputList', () => {
   beforeEach(() => {
     vi.unstubAllEnvs()
+    setInput('token', 'token')
   })
 
   it('handles single line correctly', () => {

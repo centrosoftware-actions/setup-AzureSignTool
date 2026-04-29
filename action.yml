@@ -36,6 +36,10 @@ inputs:
   timestamp_url:
     description: URL to an RFC3161 compliant timestamping service
     required: false
+  token:
+    required: false
+    description: 'The GitHub token used for making API requests'
+    default: ${{ github.token }}
 
 runs:
   using: node24

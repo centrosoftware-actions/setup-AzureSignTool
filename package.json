@@ -1,6 +1,6 @@
 {
   "name": "setup-AzureSignTool",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Download AzureSignTool and cache it for future use",
   "keywords": [
@@ -32,7 +32,7 @@
     "all": "npm run format:write && npm run lint && npm run ci-test && npm run package"
   },
   "dependencies": {
-    "@actions/core": "^3.0.0",
+    "@actions/core": "^3.0.1",
     "@actions/exec": "^3.0.0",
     "@actions/tool-cache": "^4.0.0",
     "@octokit/rest": "^22.0.1",

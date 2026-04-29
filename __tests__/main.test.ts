@@ -62,6 +62,7 @@ describe('setup-AzureSignTool', () => {
   beforeEach(() => {
     vi.resetAllMocks()
     vi.unstubAllEnvs()
+    setInput('token', 'token')
   })
 
   it('test run function downloading "latest" tag', async () => {
